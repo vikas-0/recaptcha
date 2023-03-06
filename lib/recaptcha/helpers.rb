@@ -23,15 +23,6 @@ module Recaptcha
       end
       options[:class] = "g-recaptcha-response #{options[:class]}"
 
-      if turbolinks
-        options[:onload] = recaptcha_v3_execute_function_name(action)
-      end
-      html, tag_attributes = components(options)
-      if turbolinks
-        html << recaptcha_v3_onload_script(site_key, action, callback, id, options)
-      elsif recaptcha_v3_inline_script?(options)
-        html << recaptcha_v3_inline_script(site_key, action, callback, id, options)
-      end
       case element
       when :input
         html << %(<input type="hidden" name="#{name}" id="#{id}" #{tag_attributes}/>\n)
@@ -41,6 +32,17 @@ module Recaptcha
       else
         raise(RecaptchaError, "ReCAPTCHA element `#{options[:element]}` is not valid.")
       end
+
+      if turbolinks
+        options[:onload] = recaptcha_v3_execute_function_name(action)
+      end
+      html, tag_attributes = components(options)
+      if turbolinks
+        html << recaptcha_v3_onload_script(site_key, action, callback, id, options)
+      elsif recaptcha_v3_inline_script?(options)
+        html << recaptcha_v3_inline_script(site_key, action, callback, id, options)
+      end
+
       html.respond_to?(:html_safe) ? html.html_safe : html
     end
 
